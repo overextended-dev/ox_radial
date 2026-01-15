@@ -33,7 +33,6 @@ RadialTriggers.lockpickCar = function(...)
 end
 
 
--- Generic passthrough if needed
 RadialTriggers.trigger = function(name, ...)
     TriggerEvent(name, ...)
 end

@@ -90,7 +90,10 @@ AddEventHandler('frak:server:requestList', function(jobName)
                 local xPlayer = ESX and ESX.GetPlayerFromId(id) or nil
                 if xPlayer and xPlayer.job and xPlayer.job.name == jobName then
                     local pname = GetPlayerName(id) or (xPlayer.identifier or ('Spieler ' .. tostring(id)))
-                    local gradeLabel = xPlayer.job.grade_name or xPlayer.job.gradeLabel or nil
+                    local gradeLabel = nil
+                    if jobGrades and #jobGrades > 0 then
+                        for _, g in ipairs(jobGrades) do if g.grade == xPlayer.job.grade then gradeLabel = g.label break end end
+                    end
                     mergeRow(pname, xPlayer.job.grade or 0, id, xPlayer.identifier or nil, gradeLabel)
                 end
             end
@@ -115,7 +118,11 @@ AddEventHandler('frak:server:requestList', function(jobName)
                 local xPlayer = ESX and ESX.GetPlayerFromId(id) or nil
                 if xPlayer and xPlayer.job and xPlayer.job.name == jobName then
                     local pname = GetPlayerName(id) or (xPlayer.identifier or ('Spieler ' .. tostring(id)))
-                    mergeRow(pname, xPlayer.job.grade or 0, id, xPlayer.identifier or nil)
+                    local gradeLabel = nil
+                    if jobGrades and #jobGrades > 0 then
+                        for _, g in ipairs(jobGrades) do if g.grade == xPlayer.job.grade then gradeLabel = g.label break end end
+                    end
+                    mergeRow(pname, xPlayer.job.grade or 0, id, xPlayer.identifier or nil, gradeLabel)
                 end
             end
             sendList({ list = list, grades = jobGrades })
@@ -126,7 +133,10 @@ AddEventHandler('frak:server:requestList', function(jobName)
             local xPlayer = ESX and ESX.GetPlayerFromId(id) or nil
             if xPlayer and xPlayer.job and xPlayer.job.name == jobName then
                 local pname = GetPlayerName(id) or (xPlayer.identifier or ('Spieler ' .. tostring(id)))
-                local gradeLabel = xPlayer.job.grade_name or xPlayer.job.gradeLabel or nil
+                local gradeLabel = nil
+                if jobGrades and #jobGrades > 0 then
+                    for _, g in ipairs(jobGrades) do if g.grade == xPlayer.job.grade then gradeLabel = g.label break end end
+                end
                 mergeRow(pname, xPlayer.job.grade or 0, id, xPlayer.identifier or nil, gradeLabel)
             end
         end

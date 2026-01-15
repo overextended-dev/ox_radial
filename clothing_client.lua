@@ -1,6 +1,5 @@
 ESX = exports["es_extended"]:getSharedObject()
 
--- Local command definitions (moved from config.lua)
 Config = Config or {}
 Config.Commands = {
 	[Locales and Locales['top'] or "top"] = { Func = function() ToggleClothing("Top") end, Sprite = "top", Desc = ((Locales and Locales['top_desc']) or "Ziehen Sie Ihr Oberteil aus/an"), Button = 1, Name = ((Locales and Locales['cmd_top_name']) or "Torso") },
@@ -952,7 +951,7 @@ local function PlayToggleEmote(e, cb)
 	TaskPlayAnim(Ped, e.Dict, e.Anim, 3.0, 3.0, e.Dur, e.Move, 0, false, false, false)
 	local Pause = e.Dur-500 if Pause < 500 then Pause = 500 end
 	IncurCooldown(Pause)
-	Wait(Pause) --wait for the emote to play for a bit then do the callback.
+	Wait(Pause)
 	cb()
 end
 
@@ -987,7 +986,7 @@ function ToggleClothing(whic, extra)
 	if Cooldown then return end
 	local Toggle = drawables[which] if extra then Toggle = Extras[which] end
 	local Ped = PlayerPedId()
-	local Cur = { --check what we are currently wearing.
+	local Cur = {
 		Drawable = GetPedDrawableVariation(Ped, Toggle.Drawable),
 		Id = Toggle.Drawable,
 		Ped = Ped,
@@ -995,10 +994,9 @@ function ToggleClothing(whic, extra)
 	}
 	local Gender = IsMpPed(Ped)
 	if which ~= "Mask" then
-		if not Gender then Notify(Locales['wrong_ped']) return false end -- We cancel the command here if the person is not using a multiplayer model.
-	end
+		if not Gender then Notify(Locales['wrong_ped']) return false end 
 	local Table = Toggle.Table[Gender]
-	if not Toggle.Table.Standalone then -- "Standalone" is for things that dont require a variant, like the shoes just need to be switched to a specific drawable. Looking back at this i should have planned ahead, but it all works so, meh!
+	if not Toggle.Table.Standalone then
 		for k,v in pairs(Table) do
 			if not Toggle.Remember then
 				if k == Cur.Drawable then
@@ -1067,17 +1065,17 @@ function ToggleProps(whic)
 	if Cooldown then return end
 	local Prop = Props[which]
 	local Ped = PlayerPedId()
-	local Cur = { -- Lets get out currently equipped prop.
+	local Cur = {
 		Id = Prop.Prop,
 		Ped = Ped,
 		Prop = GetPedPropIndex(Ped, Prop.Prop),
 		Texture = GetPedPropTextureIndex(Ped, Prop.Prop),
 	}
 	if not Prop.Variants then
-		if Cur.Prop ~= -1 then -- If we currently are wearing this prop, remove it and save the one we were wearing into the LastEquipped table.
+		if Cur.Prop ~= -1 then 
 			PlayToggleEmote(Prop.Emote.Off, function() LastEquipped[which] = Cur ClearPedProp(Ped, Prop.Prop) end) return true
 		else
-			local Last = LastEquipped[which] -- Detect that we have already taken our prop off, lets put it back on.
+			local Last = LastEquipped[which]
 			if Last then
 				PlayToggleEmote(Prop.Emote.On, function() SetPedPropIndex(Ped, Prop.Prop, Last.Prop, Last.Texture, true) end) LastEquipped[which] = false return true
 			end
@@ -1085,7 +1083,7 @@ function ToggleProps(whic)
 		Notify(Locales['nothing_to_remove']) return false
 	else
 		local Gender = IsMpPed(Ped)
-		if not Gender then Notify(Locales['wrong_ped']) return false end -- We dont really allow for variants on ped models, Its possible, but im pretty sure 95% of ped models dont really have variants.
+		if not Gender then Notify(Locales['wrong_ped']) return false end
 		variations = Prop.Variants[Gender]
 		for k,v in pairs(variations) do
 			if Cur.Prop == k then
@@ -1098,9 +1096,8 @@ end
 
 RegisterNetEvent('pd-clothing:ToggleProps', ToggleProps)
 
--- Registriere alle Commands nach dem Laden der Funktionen
 CreateThread(function()
-	Wait(100) -- Stelle sicher dass Locales geladen ist
+	Wait(100)
 	
 	for k,v in pairs(Config.Commands) do
 		RegisterCommand(k, v.Func)
@@ -1115,7 +1112,7 @@ CreateThread(function()
 	end
 end)
 
-AddEventHandler('onResourceStop', function(resource) -- Mostly for development, restart the resource and it will put all the clothes back on.
+AddEventHandler('onResourceStop', function(resource) 
 	if resource == GetCurrentResourceName() then
 		ResetClothing()
 	end
@@ -1127,13 +1124,12 @@ function IncurCooldown(ms)
 	end)
 end
 
-function Notify(message) -- However you want your notifications to be shown, you can switch it up here.
+function Notify(message)
 	lib.notify({
 		title = Locales and Locales['clothing_title'] or 'Clothing System',
 		description = message,
 		type = 'inform'
 	})
-	--ESX.ShowNotification(message, color)
 end
 
 function IsMpPed(ped)
@@ -1157,4 +1153,3 @@ RegisterNetEvent('dpc:ResetClothing', function()
 	LastEquipped = {}
 end)
 
---Thanks to pural--
