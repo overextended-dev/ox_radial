@@ -1053,6 +1053,8 @@ function ToggleClothing(whic, extra)
 	Notify(Locales['already_wearing']) return false
 end
 
+end
+
 RegisterNetEvent('pd-clothing:ToggleClothing', ToggleClothing)
 
 function ToggleProps(whic)
@@ -1152,4 +1154,3 @@ end)
 RegisterNetEvent('dpc:ResetClothing', function()
 	LastEquipped = {}
 end)
-
